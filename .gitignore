@@ -15,4 +15,5 @@ vignettes/*.pdf
 *.png
 *.csv
 *.PNG
+overview-charts/*.pdf
 *.pdf
