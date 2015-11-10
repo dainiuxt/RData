@@ -1,0 +1,68 @@
+#loading required libraries
+library(data.table)
+library(ggplot2)
+library(grid)
+library(magrittr)
+library(dplyr)
+library(gtable)
+library(ggthemes)
+library(gridBase)
+library(png)
+library(gridExtra)
+library(scales)
+
+Kretinga <- KRT.sub
+Kretinga <- setkey(setDT(Kretinga), Date_m, Well_N)[
+  CJ(Date_m=seq(min(Date_m), max(Date_m), by='1 month'),
+     Well_N=unique(Well_N))][is.na(QOM), QOM:=0][is.na(QWM), QWM:=0][is.na(QFM), QFM:=0][is.na(QIW), QIW:=0][is.na(QOD), QOD:=0][is.na(QWD), QWD:=0][is.na(QFD), QFD:=0][order(Well_N)]
+
+mindate <- min(as.Date(Kretinga$Date_m))
+minyear <- year(mindate)+1
+minlab <- as.Date(paste(minyear, 01, 01, sep = "-"))
+maxdate <- max(as.Date(Kretinga$Date_m))
+maxyear <- year(maxdate)
+maxlab <- as.Date(paste(maxyear, 01, 01, sep = "-"))
+
+Kretinga <- Kretinga[order(as.Date(Kretinga$Date_m, format="%Y-%m-%d")),]
+Kretinga = Kretinga %>% group_by(Well_N) %>% mutate(CumOil=cumsum(QOM))
+Kretinga = Kretinga %>% group_by(Well_N) %>% mutate(CumWat=cumsum(QWM))
+Kretinga = Kretinga %>% group_by(Well_N) %>% mutate(CumF=cumsum(QFM))
+Kretinga = Kretinga %>% group_by(Well_N) %>% mutate(CumInj=cumsum(QIW))
+Kretinga = Kretinga %>% group_by(Date_m) %>% mutate(QOMF = sum(QOM))
+Kretinga = Kretinga %>% group_by(Date_m) %>% mutate(QWMF = sum(QWM))
+Kretinga = Kretinga %>% group_by(Well_N) %>% mutate(CumOilF=cumsum(QOMF))
+
+pdf("overview-charts/Kretinga.pdf", width = 23, height = 3)
+# Charting (calling external function)
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(13,1)))
+vplayout <- function(x,y)
+  viewport(layout.pos.row = x, layout.pos.col = y)
+pkrt3 <- dtuwellprodchartow(Kretinga, "KRT3")
+pkrt4 <- dtuwellprodchartow(Kretinga, "KRT4")
+pkrt5 <- dtuwellprodchartow(Kretinga, "KRT5")
+pkrt7 <- dtuwellprodchartow(Kretinga, "KRT7")
+pkrt7r <- dtuwellprodchartow(Kretinga, "KRT7R")
+pkrt4r <- dtuwellprodchartow(Kretinga, "KRT4R")
+pkrt8 <- dtuwellprodchartow(Kretinga, "KRT8")
+pkrt9r <- dtuwellprodchartow(Kretinga, "KRT9R")
+pkrt10 <- dtuwellprodchartow(Kretinga, "KRT10")
+pkrt11 <- dtuwellprodchartow(Kretinga, "KRT11")
+pkrt8r <- dtuwellprodchartow(Kretinga, "KRT8R")
+pkrt12 <- dtuwellprodchartow(Kretinga, "KRT12")
+fprod <- dtufieldprodchartow(Kretinga)
+print(pkrt3, vp = vplayout(1,1))
+print(pkrt4, vp = vplayout(2,1))
+print(pkrt5, vp = vplayout(3,1))
+print(pkrt7, vp = vplayout(4,1))
+print(pkrt7r, vp = vplayout(5,1))
+print(pkrt4r, vp = vplayout(6,1))
+print(pkrt8, vp = vplayout(7,1))
+print(pkrt9r, vp = vplayout(8,1))
+print(pkrt10, vp = vplayout(9,1))
+print(pkrt11, vp = vplayout(10,1))
+print(pkrt8r, vp = vplayout(11,1))
+print(pkrt12, vp = vplayout(12,1))
+print(fprod, vp = vplayout(13,1))
+
+dev.off()

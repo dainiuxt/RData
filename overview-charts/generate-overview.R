@@ -1,0 +1,7 @@
+source('~/Rdata/overview-charts/Ablinga-overview-chart.R', echo=TRUE)
+source('~/Rdata/overview-charts/gnc-overview-chart.R', echo=TRUE)
+source('~/Rdata/overview-charts/grk-overview-chart.R', echo=TRUE)
+source('~/Rdata/overview-charts/krt-overview-chart.R', echo=TRUE)
+source('~/Rdata/overview-charts/liz-overview-chart.R', echo=TRUE)
+source('~/Rdata/overview-charts/nausodis-overview-chart.R', echo=TRUE)
+source('~/Rdata/overview-charts/vez-overview-chart.R', echo=TRUE)
